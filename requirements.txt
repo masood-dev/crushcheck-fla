@@ -1,0 +1,7 @@
+# Flask web framework
+Flask>=2.3.0
+
+# Gunicorn WSGI HTTP Server (required for Azure production deployment)
+gunicorn>=21.2.0
+
+# Add any other dependencies your app needs below

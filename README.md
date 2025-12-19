@@ -1,15 +1,15 @@
-# 🔥 FLAMES Calculator - Love Compatibility Game
+# FLAMES Calculator
 
-A fun web application to calculate relationship compatibility using the classic FLAMES game algorithm.
+A simple Flask web app. which is made of simple childhood love games. Like flames and nickname mashup etc, which you've probably heard in your childhood.
+the important purpose of this app is to understand the complex logic behind of these small, simple games and the algorithms used in this games, algorithms are very complex and mind boggling sometimes but, they are beautiful once you start makeing sense of it. this simple games based on simple algorithms help you understand the basis of an algorithm and program's overall workflow, this example of flames algorithm :
 
-## 🌟 Features
+
+## Features
 
 - Calculate relationship compatibility between two names
-- Beautiful, responsive UI
-- Real-time results
-- Flask backend with RESTful API
+- Lightweight Flask backend and static frontend
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Local Development
 
@@ -19,83 +19,69 @@ git clone https://github.com/YOUR-USERNAME/flames-website.git
 cd flames-website
 ```
 
-2. Create virtual environment:
+2. Create and activate a virtual environment:
 ```bash
-python -m venv venv
-venv\Scripts\activate  # Windows
-source venv/bin/activate  # Linux/Mac
+python -m venv .venv
+.venv\Scripts\activate    # Windows
+source .venv/bin/activate # macOS / Linux
 ```
 
 3. Install dependencies:
 ```bash
-pip install -r flames_app/requirements.txt
+pip install -r requirements.txt
 ```
 
 4. Run the app:
 ```bash
-python flames_app/app.py
+python -m flames_app.app
 ```
 
-5. Open browser: `http://localhost:5000`
+5. Open your browser at http://localhost:5000
 
-## 🌐 Deployment
+## About `requests`
 
-See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed instructions on deploying to:
-- **PythonAnywhere** (Recommended - 100% Free)
-- **Render** (Free tier with sleep)
-- **Google Cloud Run** (Free tier)
-- **Azure** (Free with GitHub Student Pack)
+The project includes the `requests` library for making HTTP requests to external APIs. and it's useful for:
 
-**All deployment options are 100% FREE!**
+- Fetching external data (quotes, random names, or public APIs)
+- Downloading files or images
+- Sending form data or interacting with third-party services
 
-## 💻 Tech Stack
+Example usage:
+```python
+import requests
 
-- **Backend**: Flask (Python)
-- **Frontend**: HTML, CSS, JavaScript
-- **Hosting**: Multiple free options available
-- **CI/CD**: GitHub Actions
+resp = requests.get('https://api.quotable.io/random')
+if resp.ok:
+	quote = resp.json().get('content')
+	author = resp.json().get('author')
+	print(f'"{quote}" — {author}')
+```
 
-## 📁 Project Structure
+`requests` is already listed in `requirements.txt`.
+
+## Project Structure
 
 ```
 flames-website/
 ├── flames_app/
-│   ├── app.py              # Main Flask application
-│   ├── requirements.txt    # Python dependencies
-│   ├── static/
-│   │   ├── script.js       # Frontend JavaScript
-│   │   └── style.css       # Styling
-│   └── templates/
-│       ├── home.html       # Home page
-│       ├── flames.html     # Calculator page
-│       └── layout.html     # Base template
-├── .github/
-│   └── workflows/
-│       └── deploy.yml      # GitHub Actions CI/CD
-├── Procfile               # For cloud deployments
-├── runtime.txt            # Python version
-├── wsgi.py               # WSGI entry point
-└── DEPLOYMENT.md         # Deployment guide
+│   ├── app.py
+│   ├── requirements.txt
+   ├── static/
+   └── templates/
+├── DEPLOYMENT.md
+├── Procfile
+├── requirements.txt
+└── README.md
 ```
 
-## 🎓 GitHub Student Pack Benefits
+## Deployment
 
-This project can be deployed 100% free using GitHub Student Pack benefits:
-- Free domain from Namecheap (.me domain)
-- $100 Azure credits
-- DigitalOcean credits
-- And much more!
+See [DEPLOYMENT.md](DEPLOYMENT.md) for deployment options and notes.
 
-Apply at: [education.github.com/pack](https://education.github.com/pack)
+## Contributing
 
-## 📝 License
+Contributions are welcome. Open an issue or submit a pull request.
 
-MIT License - feel free to use this project for learning!
+## License
 
-## 🤝 Contributing
-
-Pull requests are welcome! Feel free to contribute.
-
-## 🌐 Live Demo
-
-Coming soon at: **lovehub.page**
+MIT License

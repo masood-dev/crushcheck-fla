@@ -1,10 +1,17 @@
-# Purpose Calculator
+# Purpose LEARNING
 
 A simple Flask web app. which is made of simple childhood love games. Like flames and nickname mashup etc, which you've probably heard in your childhood.
-the important purpose of this app is to understand the complex logic behind of these small, simple games and the algorithms used in this games, algorithms are very complex and mind boggling sometimes but, they are beautiful once you start makeing sense of it. this simple games based on simple algorithms made it easy to understand the logic even better in fun way by playing simple games. you can fork the repository to learn and play around on you own.
+the important purpose of this app is to understand the complex logic behind of these small, simple games and the algorithms used in this games, algorithms are very complex and mind boggling sometimes but, they are beautiful once you start makeing sense of it. this simple games based on simple algorithms made it easy to understand the logic even better in fun way by playing simple games. you can contribute to the repository and also learn, play around on your own.
 The flames algorithm :
 
+![unnamed](https://github.com/user-attachments/assets/ead584e2-cb3a-4dba-b714-885264ad00b0)
 
+
+
+## Features
+
+- Calculate relationship compatibility between two names
+- Lightweight Flask backend and static frontend
 
 ## Quick Start
 

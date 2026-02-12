@@ -14,7 +14,7 @@ Honestly, I wanted to learn web development but most tutorial projects are eithe
 
 Plus, the whole point isn't just writing code. I wanted to learn the full process: writing code, using Git properly, deploying to the cloud, making something that actually works online. It's more fun when you can share a real link with friends instead of just showing them code on your laptop.
 
-**Check it out live:** [crushcheck](crushcheck-fla-b3b9hpdqa4c9ftdh.centralindia-01.azurewebsites.net)
+**Check it out live:** [crushcheck](https://crushcheck-fla-b3b9hpdqa4c9ftdh.centralindia-01.azurewebsites.net)
 
 ### How the FLAMES Algorithm Works
 

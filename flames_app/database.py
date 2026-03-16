@@ -1,13 +1,18 @@
 """Database module for Secret Admirer Notes (SQLite)."""
 
-import sqlite3
-import secrets
 import os
+import secrets
+import sqlite3
 from datetime import datetime, timedelta
-from werkzeug.security import generate_password_hash, check_password_hash
+
+from werkzeug.security import check_password_hash, generate_password_hash
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATABASE = os.path.join(BASE_DIR, 'secret_notes.db')
+
+
+def current_timestamp():
+    return datetime.now().isoformat(sep=' ', timespec='seconds')
 
 
 def get_db_connection():
@@ -37,7 +42,7 @@ def create_note(message, password, sender_name=None, expire_days=30):
     conn = get_db_connection()
     note_id = secrets.token_urlsafe(8)
     password_hash = generate_password_hash(password)
-    expires_at = datetime.now() + timedelta(days=expire_days)
+    expires_at = (datetime.now() + timedelta(days=expire_days)).isoformat(sep=' ', timespec='seconds')
     
     conn.execute('''
         INSERT INTO secret_notes (id, message, password_hash, sender_name, expires_at)
@@ -52,8 +57,12 @@ def create_note(message, password, sender_name=None, expire_days=30):
 def get_note(note_id):
     conn = get_db_connection()
     note = conn.execute(
-        'SELECT id, message, sender_name, created_at, view_count FROM secret_notes WHERE id = ?',
-        (note_id,)
+        '''
+        SELECT id, message, sender_name, created_at, view_count
+        FROM secret_notes
+        WHERE id = ? AND (expires_at IS NULL OR expires_at >= ?)
+        ''',
+        (note_id, current_timestamp())
     ).fetchone()
     conn.close()
     return note
@@ -62,8 +71,12 @@ def get_note(note_id):
 def verify_password(note_id, password):
     conn = get_db_connection()
     note = conn.execute(
-        'SELECT password_hash FROM secret_notes WHERE id = ?',
-        (note_id,)
+        '''
+        SELECT password_hash
+        FROM secret_notes
+        WHERE id = ? AND (expires_at IS NULL OR expires_at >= ?)
+        ''',
+        (note_id, current_timestamp())
     ).fetchone()
     
     if note and check_password_hash(note['password_hash'], password):
@@ -82,6 +95,6 @@ def verify_password(note_id, password):
 
 def cleanup_expired_notes():
     conn = get_db_connection()
-    conn.execute('DELETE FROM secret_notes WHERE expires_at < ?', (datetime.now(),))
+    conn.execute('DELETE FROM secret_notes WHERE expires_at < ?', (current_timestamp(),))
     conn.commit()
     conn.close()

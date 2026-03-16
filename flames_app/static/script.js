@@ -144,4 +144,133 @@ document.addEventListener('DOMContentLoaded', () => {
             zodiacResult.scrollIntoView({ behavior: 'smooth' });
         }
     }
+
+    const secretNoteForm = document.getElementById('secretNoteForm');
+    if (secretNoteForm) {
+        const resultContainer = document.getElementById('result');
+        const shareableLink = document.getElementById('shareableLink');
+        const createBtn = document.getElementById('createBtn');
+        const messageInput = document.getElementById('message');
+        const charCount = document.getElementById('charCount');
+        const copyBtn = document.getElementById('copyBtn');
+        const createAnotherBtn = document.getElementById('createAnotherBtn');
+
+        messageInput.addEventListener('input', () => {
+            const count = messageInput.value.length;
+            charCount.textContent = `${count} / 500 characters`;
+            charCount.style.color = count > 450 ? '#ff6b6b' : '#666';
+        });
+
+        secretNoteForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const originalBtnText = createBtn.querySelector('span').innerText;
+            createBtn.querySelector('span').innerText = 'Creating...';
+            createBtn.disabled = true;
+
+            const formData = {
+                message: document.getElementById('message').value,
+                password: document.getElementById('password').value,
+                sender_name: document.getElementById('senderName').value || 'Someone Special'
+            };
+
+            try {
+                const response = await fetch('/create-note', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to create note');
+                }
+
+                shareableLink.value = new URL(data.note_path, window.location.origin).href;
+                secretNoteForm.classList.add('hidden');
+                resultContainer.classList.remove('hidden');
+            } catch (error) {
+                console.error('Error:', error);
+                alert(error.message || 'Failed to create note. Please try again.');
+            } finally {
+                createBtn.querySelector('span').innerText = originalBtnText;
+                createBtn.disabled = false;
+            }
+        });
+
+        copyBtn.addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText(shareableLink.value);
+                const originalText = copyBtn.innerText;
+                copyBtn.innerText = 'Copied!';
+                setTimeout(() => {
+                    copyBtn.innerText = originalText;
+                }, 2000);
+            } catch (error) {
+                console.error('Copy failed:', error);
+                shareableLink.select();
+                document.execCommand('copy');
+            }
+        });
+
+        createAnotherBtn.addEventListener('click', () => {
+            secretNoteForm.reset();
+            charCount.textContent = '0 / 500 characters';
+            charCount.style.color = '#666';
+            secretNoteForm.classList.remove('hidden');
+            resultContainer.classList.add('hidden');
+        });
+    }
+
+    const unlockForm = document.getElementById('unlockForm');
+    if (unlockForm) {
+        const lockedView = document.getElementById('lockedView');
+        const unlockedView = document.getElementById('unlockedView');
+        const errorMsg = document.getElementById('errorMsg');
+        const unlockBtn = document.getElementById('unlockBtn');
+        const passwordInput = document.getElementById('passwordInput');
+        const noteId = unlockForm.dataset.noteId;
+
+        unlockForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            errorMsg.classList.add('hidden');
+
+            const originalText = unlockBtn.querySelector('span').innerText;
+            unlockBtn.querySelector('span').innerText = 'Unlocking...';
+            unlockBtn.disabled = true;
+
+            try {
+                const response = await fetch('/unlock-note', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ note_id: noteId, password: passwordInput.value })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    throw new Error(data.error || 'Incorrect password');
+                }
+
+                document.getElementById('senderName').textContent = data.sender_name;
+                document.getElementById('secretMessage').textContent = data.message;
+                document.getElementById('viewCount').textContent = `This message has been viewed ${data.view_count} time(s)`;
+
+                lockedView.classList.add('hidden');
+                unlockedView.classList.remove('hidden');
+                unlockedView.style.animation = 'flipIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+            } catch (error) {
+                console.error('Error:', error);
+                errorMsg.textContent = error.message || 'Something went wrong. Please try again.';
+                errorMsg.classList.remove('hidden');
+                passwordInput.value = '';
+                passwordInput.focus();
+            } finally {
+                unlockBtn.querySelector('span').innerText = originalText;
+                unlockBtn.disabled = false;
+            }
+        });
+    }
 });

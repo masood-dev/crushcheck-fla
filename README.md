@@ -65,12 +65,12 @@ Here's how everything is organized:
 crushcheck-fla/
 ├── flames_app/              # Main app folder
 │   ├── app.py              # Flask routes and game logic
+│   ├── database.py         # Secret note storage and password checks
 │   ├── static/             # CSS and JavaScript files
 │   └── templates/          # HTML templates
+├── tests/                  # Basic route and security regression tests
 ├── Procfile               # For cloud deployment
 ├── requirements.txt        # Python packages needed
-├── runtime.txt            # Python version
-├── startup.sh             # Startup script
 └── wsgi.py                # Entry point for production server
 ```
 
@@ -80,7 +80,14 @@ The structure is pretty standard for Flask apps. Templates go in `templates/`, C
 
 I deployed this on **Microsoft Azure** because they have a free tier for students (Azure for Students gives you $100 credit).
 
-Azure Web Apps made it pretty straightforward - you just push your code, and it handles the rest. The `Procfile` and `startup.sh` files are basically instructions for Azure on how to run the app. Once it's deployed, you get a real URL that you can share with anyone.
+Azure Web Apps made it pretty straightforward - you just push your code, and it handles the rest. The `Procfile`, `wsgi.py`, and GitHub Actions workflow are the pieces that tell Azure how to build and run the app. Once it's deployed, you get a real URL that you can share with anyone.
+
+## Security Notes
+
+- Secret notes now expire at read time, not just during startup cleanup.
+- Rate limiting is applied to public POST endpoints to reduce spam and brute-force attempts.
+- Password length and sender name limits are enforced on the server, not only in the browser.
+- Basic security headers are set for production responses.
 
 If you're a student like me, definitely check out Azure for Students. The free credits are great for learning and experimenting without worrying about bills.
 

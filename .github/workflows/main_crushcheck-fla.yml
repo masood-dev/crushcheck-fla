@@ -10,6 +10,11 @@ on:
       - main
   workflow_dispatch:
 
+env:
+  AZURE_CLIENT_ID: ${{ secrets.AZUREAPPSERVICE_CLIENTID_3EC12C566E124999AC109B16D4AEAB2B }}
+  AZURE_TENANT_ID: ${{ secrets.AZUREAPPSERVICE_TENANTID_D82EDC9423EA4F8386CDC1020F9F5D87 }}
+  AZURE_SUBSCRIPTION_ID: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_3773E90D13894E399702BD3201CF6927 }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -30,7 +35,8 @@ jobs:
         run: |
           python -m venv antenv
           source antenv/bin/activate
-          pip install -r requirements.txt
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
 
       - name: Run tests
         run: |
@@ -40,7 +46,7 @@ jobs:
       - name: Audit Python dependencies
         run: |
           source antenv/bin/activate
-          pip install pip-audit
+          python -m pip install pip-audit
           pip-audit -r requirements.txt
                 
       # By default, when you enable GitHub CI/CD integration through the Azure portal, the platform automatically sets the SCM_DO_BUILD_DURING_DEPLOYMENT application setting to true. This triggers the use of Oryx, a build engine that handles application compilation and dependency installation (e.g., pip install) directly on the platform during deployment. Hence, we exclude the antenv virtual environment directory from the deployment artifact to reduce the payload size. 
@@ -65,19 +71,32 @@ jobs:
       contents: read #This is required for actions/checkout
 
     steps:
+      - name: Check Azure secrets
+        id: azure_secrets
+        run: |
+          if [ -n "$AZURE_CLIENT_ID" ] && [ -n "$AZURE_TENANT_ID" ] && [ -n "$AZURE_SUBSCRIPTION_ID" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "Azure deploy secrets are missing. Skipping deployment steps."
+          fi
+
       - name: Download artifact from build job
+        if: steps.azure_secrets.outputs.ready == 'true'
         uses: actions/download-artifact@v4
         with:
           name: python-app
       
       - name: Login to Azure
+        if: steps.azure_secrets.outputs.ready == 'true'
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_3EC12C566E124999AC109B16D4AEAB2B }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_D82EDC9423EA4F8386CDC1020F9F5D87 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_3773E90D13894E399702BD3201CF6927 }}
+          client-id: ${{ env.AZURE_CLIENT_ID }}
+          tenant-id: ${{ env.AZURE_TENANT_ID }}
+          subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
 
       - name: 'Deploy to Azure Web App'
+        if: steps.azure_secrets.outputs.ready == 'true'
         uses: azure/webapps-deploy@v3
         id: deploy-to-webapp
         with:

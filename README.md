@@ -86,7 +86,7 @@ Azure Web Apps made it pretty straightforward - you just push your code, and it 
 
 - Secret notes now expire at read time, not just during startup cleanup.
 - Rate limiting is applied to public POST endpoints to reduce spam and brute-force attempts.
-- Password length and sender name limits are enforced on the server, not only in the browser.
+- Password minimum length is 4 characters, and sender name limits are enforced on the server, not only in the browser.
 - Basic security headers are set for production responses.
 
 If you're a student like me, definitely check out Azure for Students. The free credits are great for learning and experimenting without worrying about bills.

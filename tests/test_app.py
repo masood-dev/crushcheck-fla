@@ -20,7 +20,7 @@ def test_create_note_rejects_short_password(client):
         '/create-note',
         json={
             'message': 'hello there',
-            'password': '1234',
+            'password': '123',
             'sender_name': 'tester'
         }
     )

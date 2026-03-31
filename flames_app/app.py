@@ -14,7 +14,7 @@ app.config['MAX_CONTENT_LENGTH'] = 32 * 1024
 MAX_MESSAGE_LENGTH = 500
 MAX_SENDER_NAME_LENGTH = 30
 MAX_NAME_LENGTH = 50
-MIN_PASSWORD_LENGTH = 6
+MIN_PASSWORD_LENGTH = 4
 
 limiter = Limiter(
     key_func=get_remote_address,

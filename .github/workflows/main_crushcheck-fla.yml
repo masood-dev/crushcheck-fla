@@ -11,9 +11,7 @@ on:
   workflow_dispatch:
 
 env:
-  AZURE_CLIENT_ID: ${{ secrets.AZUREAPPSERVICE_CLIENTID_3EC12C566E124999AC109B16D4AEAB2B }}
-  AZURE_TENANT_ID: ${{ secrets.AZUREAPPSERVICE_TENANTID_D82EDC9423EA4F8386CDC1020F9F5D87 }}
-  AZURE_SUBSCRIPTION_ID: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_3773E90D13894E399702BD3201CF6927 }}
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   build:
@@ -71,36 +69,21 @@ jobs:
       contents: read #This is required for actions/checkout
 
     steps:
-      - name: Check Azure secrets
-        id: azure_secrets
-        run: |
-          if [ -n "$AZURE_CLIENT_ID" ] && [ -n "$AZURE_TENANT_ID" ] && [ -n "$AZURE_SUBSCRIPTION_ID" ]; then
-            echo "ready=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "ready=false" >> "$GITHUB_OUTPUT"
-            echo "Azure deploy secrets are missing. Skipping deployment steps."
-          fi
-
       - name: Download artifact from build job
-        if: steps.azure_secrets.outputs.ready == 'true'
         uses: actions/download-artifact@v4
         with:
           name: python-app
       
       - name: Login to Azure
-        if: steps.azure_secrets.outputs.ready == 'true'
         uses: azure/login@v2
         with:
-          client-id: ${{ env.AZURE_CLIENT_ID }}
-          tenant-id: ${{ env.AZURE_TENANT_ID }}
-          subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_3EC12C566E124999AC109B16D4AEAB2B }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_D82EDC9423EA4F8386CDC1020F9F5D87 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_3773E90D13894E399702BD3201CF6927 }}
 
       - name: 'Deploy to Azure Web App'
-        if: steps.azure_secrets.outputs.ready == 'true'
         uses: azure/webapps-deploy@v3
         id: deploy-to-webapp
         with:
           app-name: 'crushcheck-fla'
           slot-name: 'Production'
-
-          
